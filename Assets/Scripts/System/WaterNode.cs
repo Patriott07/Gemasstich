@@ -12,13 +12,15 @@ public class WaterNode : MonoBehaviour
     [Header("Efek Penghijauan")]
     public Material materialTanahHijau; // Masukkan material warna hijau di sini
     public float radiusPenghijauan = 2.1f; // Radius 2 blok (dikasih lebih 0.1f untuk toleransi)
-
+    public bool setZero = true;
     void Start()
     {
         // 1. Animasi muncul airnya pakai DOTween biar satisfying
-        transform.localScale = Vector3.zero;
-        transform.DOScale(0.5f, 0.04f).SetEase(Ease.OutBack).OnComplete(() =>
+        if (setZero)
+            transform.localScale = Vector3.zero;
+        transform.DOScale(0.5f, 0.04f).SetEase(Ease.OutBack).SetUpdate(true).OnComplete(() =>
         {
+            transform.localScale = Vector3.one * 0.5f;
             // Setelah animasi muncul selesai, mulai proses mikir (menyebar & menghijaukan)
             StartCoroutine(ProsesAir());
         });
@@ -98,6 +100,7 @@ public class WaterNode : MonoBehaviour
                     hit.transform.localScale = Vector3.zero;
 
                     Sequence greenSeq = DOTween.Sequence();
+                    greenSeq.SetUpdate(true);
 
                     // 4. Animasi membesar ke ukuran asli dan naik ke posisi asli
                     // Ease.OutQuad bikin pergerakannya cepat di awal lalu melambat halus di akhir (tanpa membal)

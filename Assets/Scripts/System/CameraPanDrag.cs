@@ -16,7 +16,7 @@ public class CameraPanDrag : MonoBehaviour
     public float maxZoom = 12f;
     public float zoomSmoothSpeed = 10f; // Efek empuk saat nge-zoom
     private float targetZoom; // Menyimpan ukuran tujuan akhir zoom
-
+    public Transform targetSorot;
     private Camera cam;
 
     void Awake()
@@ -40,7 +40,20 @@ public class CameraPanDrag : MonoBehaviour
         {
             Vector3 newRotate = cam.transform.rotation.eulerAngles;
             newRotate.y += 90;
-            cam.transform.DOLocalRotate(newRotate, 1.4f).SetEase(Ease.OutBack);
+            // Bikin Sequence (Urutan Animasi)
+            Sequence seq = DOTween.Sequence();
+
+            // 1. Putar kamera selama 1.4 detik
+            seq.Append(cam.transform.DOLocalRotate(newRotate, 1.4f).SetEase(Ease.OutBack));
+
+            // 2. Setelah putar selesai, geser POSISI kamera selama 1 detik (Rotasi tetap aman!)
+            if (targetSorot != null)
+            {
+                // Posisi akhir = Posisi target + jarak kamera
+                Vector3 targetPos = targetSorot.position;
+                targetPosition = targetPos;
+                // seq.Append(cam.transform.DOMove(targetPos, 1f).SetEase(Ease.InOutQuad));
+            }
         }
     }
 
